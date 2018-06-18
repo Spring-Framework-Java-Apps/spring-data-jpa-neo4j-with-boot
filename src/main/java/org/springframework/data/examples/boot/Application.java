@@ -1,10 +1,9 @@
 package org.springframework.data.examples.boot;
 
-import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,7 +25,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 @SpringBootApplication(exclude = Neo4jDataAutoConfiguration.class)
 public class Application {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
+	private static final Log LOGGER = LogFactory.getLog(Application.class);
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class);

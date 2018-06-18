@@ -45,24 +45,21 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j</artifactId>
-            <version>${neo4j.version}</version>
-            <scope>runtime</scope>
-        </dependency>
+
+
         <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j-graphdb-api</artifactId>
             <version>${neo4j.version}</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-kernel</artifactId>
-            <version>${neo4j.version}</version>
-            <scope>compile</scope>
-        </dependency>
+
+       <dependency>
+           <groupId>org.neo4j</groupId>
+           <artifactId>neo4j-kernel</artifactId>
+           <version>${neo4j.version}</version>
+           <scope>compile</scope>
+       </dependency>
 
     </dependencies>
 
@@ -88,33 +85,37 @@
                     <version>${neo4j-ogm.version}</version>
                 </dependency>
                 <dependency>
+                    <groupId>org.neo4j</groupId>
+                    <artifactId>neo4j-ogm-bolt-driver</artifactId>
+                    <scope>compile</scope>
+                </dependency>
+                <dependency>
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
                 </dependency>
                 <dependency>
                     <groupId>org.neo4j</groupId>
-                    <artifactId>neo4j-ogm-bolt-driver</artifactId>
-                    <scope>compile</scope>
+                    <artifactId>neo4j</artifactId>
+                    <version>${neo4j.version}</version>
                 </dependency>
             </dependencies>
         </profile>
         <profile>
-            <id>distributed</id>
+            <id>remotes</id>
             <dependencies>
-                <dependency>
-                    <groupId>org.postgresql</groupId>
-                    <artifactId>postgresql</artifactId>
-                </dependency>
-                <dependency>
-                    <groupId>org.neo4j</groupId>
-                    <artifactId>neo4j-ogm-bolt-driver</artifactId>
-                    <version>${neo4j-ogm.version}</version>
-                </dependency>
                 <dependency>
                     <groupId>org.neo4j</groupId>
                     <artifactId>neo4j-ogm-embedded-driver</artifactId>
                     <version>${neo4j-ogm.version}</version>
                     <scope>compile</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.neo4j</groupId>
+                    <artifactId>neo4j-ogm-bolt-driver</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
                 </dependency>
                 <dependency>
                     <groupId>org.neo4j</groupId>
@@ -124,11 +125,7 @@
                 <dependency>
                     <groupId>org.neo4j</groupId>
                     <artifactId>neo4j-ogm-core</artifactId>
-                </dependency>
-                <dependency>
-                    <groupId>redis.clients</groupId>
-                    <artifactId>jedis</artifactId>
-                    <optional>true</optional>
+                    <scope>compile</scope>
                 </dependency>
             </dependencies>
         </profile>

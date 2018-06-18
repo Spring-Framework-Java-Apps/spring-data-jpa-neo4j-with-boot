@@ -1,13 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
-    <logger name="org.springframework.data.examples.boot" level="DEBUG" />
-    <logger name="org.hibernate" level="INFO" />
+
     <logger name="ch.qos.logback" level="INFO" />
-    <logger name="org.hibernate.SQL" level="DEBUG" />
-    <logger name="org.postgresql" level="DEBUG" />
-    <logger name="org.springframework.boot" level="WARN" />
-    <logger name="org.springframework.test" level="DEBUG" />
+
+    <!-- JPA -->
+    <logger name="org.hibernate.SQL" level="INFO" />
+    <logger name="org.hibernate" level="WARN" />
+    <logger name="org.postgresql" level="INFO" />
+    <logger name="com.h2database" level="INFO" />
+
+    <!-- Neo4J -->
+
+    <logger name="org.neo4j.ogm.config" level="DEBUG" />
+    <logger name="org.neo4j.driver" level="DEBUG" />
     <logger name="org.neo4j.ogm" level="DEBUG" />
-    <root level="WARN"></root>
+
+    <!-- Spring Boot-->
+    <logger name="org.springframework.boot" level="INFO" />
+    <logger name="org.springframework.test" level="INFO" />
+
+    <!-- Spring Framework -->
+    <logger name="org.springframework.transaction" level="INFO" />
+    <logger name="org.springframework.data.neo4j" level="DEBUG" />
+    <logger name="org.springframework.boot" level="INFO" />
+
+    <!-- Application -->
+    <logger name="org.springframework.data.examples.boot.neo4j" level="DEBUG" />
+    <logger name="org.springframework.data.examples.boot.jpa" level="DEBUG" />
+    <logger name="org.springframework.data.examples.boot.config" level="DEBUG" />
+
+    <!-- Everything Else -->
+    <root level="INFO"></root>
 </configuration>
