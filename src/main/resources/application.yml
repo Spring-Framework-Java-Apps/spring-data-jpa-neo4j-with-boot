@@ -1,0 +1,61 @@
+---
+spring:
+  profiles: default
+  data:
+    neo4j:
+      driverClassName: org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver
+---
+spring:
+  profiles: distributed
+  jpa:
+    databasePlatform: org.hibernate.dialect.PostgreSQL95Dialect
+    #openInView: true
+    generateDdl: true
+    showSql: true
+    hibernate:
+      ddlAuto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL95Dialect
+        globally_quoted_identifiers: true
+        temp:
+          use_jdbc_metadata_defaults: false
+  datasource:
+    url: 'jdbc:postgresql://localhost:5432/evaluator?user=evaluator&password=evaluatorpwd&schema=public&catalog=information_schema'
+    jdbcUrl: 'jdbc:postgresql://localhost:5432/evaluator?user=evaluator&password=evaluatorpwd&schema=public&catalog=information_schema'
+    username: evaluator
+    password: evaluatorpwd
+    driverClassName: org.postgresql.Driver
+    platform: postgresql
+  data:
+    neo4j:
+      driverClassName: org.neo4j.ogm.drivers.bolt.driver.BoltDriver
+      uri: bolt://127.0.0.1:7687
+      username: neo4j
+      password: secret
+      repositories:
+        enabled: true
+    dao:
+      exceptiontranslation:
+        enabled: true
+    datasource:
+      url: 'jdbc:postgresql://localhost:5432/evaluator?user=evaluator&password=evaluatorpwd&schema=public&catalog=information_schema'
+      jdbcUrl: 'jdbc:postgresql://localhost:5432/evaluator?user=evaluator&password=evaluatorpwd&schema=public&catalog=information_schema'
+      username: evaluator
+      password: evaluatorpwd
+      driverClassName: org.postgresql.Driver
+      platform: postgresql
+    jpa:
+      databasePlatform: org.hibernate.dialect.PostgreSQL95Dialect
+      openInView: true
+      generateDdl: true
+      showSql: true
+      hibernate:
+        ddlAuto: update
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.PostgreSQL95Dialect
+          globally_quoted_identifiers: true
+          temp:
+            use_jdbc_metadata_defaults: false
+

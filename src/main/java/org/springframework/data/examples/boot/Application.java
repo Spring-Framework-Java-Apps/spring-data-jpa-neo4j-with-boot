@@ -1,6 +1,7 @@
 package org.springframework.data.examples.boot;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,14 +84,14 @@ public class Application {
 			LOGGER.info("");
 
 			// fetch an individual customer by ID
-			Customer customer = customerRepository.findOne(1L);
+			Optional<Customer> customer = customerRepository.findById(1L);
 			LOGGER.info("Customer found with findOne(1L):");
 			LOGGER.info("--------------------------------");
 			LOGGER.info(customer.toString());
 			LOGGER.info("");
 
 			// fetch an individual person by ID
-			Person person = personRepository.findOne(1L);
+			Optional<Person> person = personRepository.findById(1L);
 			LOGGER.info("Person found with findOne(1L):");
 			LOGGER.info("--------------------------------");
 			LOGGER.info(customer.toString());

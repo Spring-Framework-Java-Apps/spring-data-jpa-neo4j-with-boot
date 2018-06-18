@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <logger name="org.springframework.data.examples.boot" level="DEBUG" />
+    <logger name="org.hibernate" level="INFO" />
+    <logger name="ch.qos.logback" level="INFO" />
+    <logger name="org.hibernate.SQL" level="DEBUG" />
+    <logger name="org.postgresql" level="DEBUG" />
+    <logger name="org.springframework.boot" level="WARN" />
+    <logger name="org.springframework.test" level="DEBUG" />
+    <logger name="org.neo4j.ogm" level="DEBUG" />
+    <root level="WARN"></root>
+</configuration>
