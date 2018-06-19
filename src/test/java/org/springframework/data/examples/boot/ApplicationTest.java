@@ -7,20 +7,16 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-//import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.CommandLineRunner;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.context.annotation.Bean;
 import org.springframework.data.examples.boot.config.Neo4jConfiguration;
 import org.springframework.data.examples.boot.jpa.domain.Customer;
-import org.springframework.data.examples.boot.jpa.repository.CustomerRepository;
+import org.springframework.data.examples.boot.jpa.service.CustomerService;
 import org.springframework.data.examples.boot.neo4j.domain.Person;
-import org.springframework.data.examples.boot.neo4j.repository.PersonRepository;
+import org.springframework.data.examples.boot.neo4j.service.PersonService;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
-//import org.springframework.test.annotation.Commit;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -37,32 +33,39 @@ import java.util.Optional;
     },
     webEnvironment = SpringBootTest.WebEnvironment.NONE
 )
-//@AutoConfigureMockMvc
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ApplicationTest {
 
     private static final Log LOGGER = LogFactory.getLog(ApplicationTest.class);
 
     @Autowired
-    private CustomerRepository customerRepository;
+    private CustomerService customerService;
 
     @Autowired
-    private PlatformTransactionManager jpaTransactionManager;
+    @Qualifier("jpaTransactionManager")
+    private JpaTransactionManager jpaTransactionManager;
 
     @Autowired
-    private PersonRepository personRepository;
+    @Qualifier("neo4jTransactionManager")
+    private  Neo4jTransactionManager neo4jTransactionManager;
 
     @Autowired
-    private Neo4jTransactionManager neo4jTransactionManager;
+    private PersonService personService;
+
+    @Autowired
+    @Qualifier("transactionManager")
+    private  PlatformTransactionManager transactionManager;
 
     //@Commit
     @Test
     public void runApplicationTest() throws Exception {
         LOGGER.info("----------------------------------------------------------");
-        LOGGER.info(" PlatformTransactionManager jpaTransactionManager = ");
+        LOGGER.info(" JpaTransactionManager jpaTransactionManager = ");
         LOGGER.info(jpaTransactionManager.getClass().getName());
         LOGGER.info(" Neo4jTransactionManager neo4jTransactionManager  = ");
         LOGGER.info(neo4jTransactionManager.getClass().getName());
+        LOGGER.info(" PlatformTransactionManager transactionManager = ");
+        LOGGER.info(transactionManager.getClass().getName());
         LOGGER.info("----------------------------------------------------------");
         TransactionTemplate jpaTransactionTemplate = new TransactionTemplate(jpaTransactionManager);
         jpaTransactionTemplate.execute(new TransactionCallbackWithoutResult() {
@@ -70,11 +73,11 @@ public class ApplicationTest {
             protected void doInTransactionWithoutResult(TransactionStatus status) {
             LOGGER.info(" save a couple of customers: ");
             LOGGER.info("----------------------------------------------------------");
-            customerRepository.save(new Customer("Jack", "Bauer"));
-            customerRepository.save(new Customer("Chloe", "O'Brian"));
-            customerRepository.save(new Customer("Kim", "Bauer"));
-            customerRepository.save(new Customer("David", "Palmer"));
-            customerRepository.save(new Customer("Michelle", "Dessler"));
+            customerService.save(new Customer("Jack", "Bauer"));
+            customerService.save(new Customer("Chloe", "O'Brian"));
+            customerService.save(new Customer("Kim", "Bauer"));
+            customerService.save(new Customer("David", "Palmer"));
+            customerService.save(new Customer("Michelle", "Dessler"));
             }
         });
         TransactionTemplate neo4jTransactionTemplate = new TransactionTemplate(neo4jTransactionManager);
@@ -83,43 +86,41 @@ public class ApplicationTest {
             protected void doInTransactionWithoutResult(TransactionStatus status) {
             LOGGER.info(" also save them as people: ");
             LOGGER.info("----------------------------------------------------------");
-            personRepository.save(new Person("Jack Bauer"));
-            personRepository.save(new Person("Chloe O'Brian"));
-            personRepository.save(new Person("Kim Bauer"));
-            personRepository.save(new Person("David Palmer"));
-            personRepository.save(new Person("Michelle Dessler"));
+            personService.save(new Person("Jack Bauer"));
+            personService.save(new Person("Chloe O'Brian"));
+            personService.save(new Person("Kim Bauer"));
+            personService.save(new Person("David Palmer"));
+            personService.save(new Person("Michelle Dessler"));
             }
         });
         LOGGER.info(" fetch all customers ");
         LOGGER.info("");
-        //TransactionTemplate jpaTransactionTemplate = new TransactionTemplate(jpaTransactionManager);
-        LOGGER.info(" Customers found with findAll():");
+       LOGGER.info(" Customers found with findAll():");
         LOGGER.info("----------------------------------------------------------");
-        Iterable<Customer> customers = jpaTransactionTemplate.execute(status -> customerRepository.findAll());
+        Iterable<Customer> customers = jpaTransactionTemplate.execute(status -> customerService.findAll());
         for (Customer customer : customers) {
             LOGGER.info(customer.toString());
         }
         LOGGER.info("");
         LOGGER.info(" fetch all people ");
         LOGGER.info("");
-        //TransactionTemplate neo4jTransactionTemplate = new TransactionTemplate(neo4jTransactionManager);
         LOGGER.info(" People found with findAll():");
         LOGGER.info("----------------------------------------------------------");
-        Iterable<Person> people = neo4jTransactionTemplate.execute(status -> personRepository.findAll());
+        Iterable<Person> people = neo4jTransactionTemplate.execute(status -> personService.findAll());
         for (Person person : people) {
             LOGGER.info(person.toString());
         }
         LOGGER.info("");
         LOGGER.info(" fetch an individual customer by ID");
         LOGGER.info("");
-        Optional<Customer> customer = customerRepository.findById(1L);
+        Optional<Customer> customer = customerService.findById(1L);
         LOGGER.info(" Customer found with findOne(1L):");
         LOGGER.info("----------------------------------------------------------");
         LOGGER.info(customer.toString());
         LOGGER.info("");
         LOGGER.info(" fetch an individual person by ID");
         LOGGER.info("");
-        Optional<Person> person = personRepository.findById(1L);
+        Optional<Person> person = personService.findById(1L);
         LOGGER.info(" Person found with findOne(1L):");
         LOGGER.info("----------------------------------------------------------");
         LOGGER.info(person.toString());
@@ -128,7 +129,7 @@ public class ApplicationTest {
         LOGGER.info("");
         LOGGER.info(" Customer found with findByLastName('Bauer'):");
         LOGGER.info("----------------------------------------------------------");
-        for (Customer bauer : customerRepository.findByLastName("Bauer")) {
+        for (Customer bauer : customerService.findByLastName("Bauer")) {
             LOGGER.info(bauer.toString());
         }
         LOGGER.info("");
@@ -136,7 +137,7 @@ public class ApplicationTest {
         LOGGER.info("");
         LOGGER.info(" Customer found with findByLastName('Bauer'):");
         LOGGER.info("----------------------------------------------------------");
-        Person jackBauer = personRepository.findByName("Jack Bauer");
+        Person jackBauer = personService.findByName("Jack Bauer");
         LOGGER.info(jackBauer.toString());
         LOGGER.info("");
     }

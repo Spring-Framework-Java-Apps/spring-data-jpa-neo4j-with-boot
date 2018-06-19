@@ -4,25 +4,29 @@ import javax.persistence.EntityManagerFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.neo4j.driver.v1.Config;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+import org.neo4j.ogm.config.AutoIndexMode;
 import org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver;
 import org.neo4j.ogm.driver.Driver;
-import org.neo4j.ogm.drivers.bolt.driver.BoltDriver;
 import org.neo4j.ogm.session.SessionFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
+import org.springframework.data.transaction.ChainedTransactionManager;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.io.File;
+
 
 /**
  * @author Mark Angrish
@@ -51,55 +55,69 @@ public class Neo4jConfiguration {
 	@Value("${spring.profiles.active}")
 	private String springProfile;
 
+    @Nullable
+    @Value("${spring.data.neo4j.username}")
+    private String username;
 
-	private SessionFactory sessionFactoryFromBoltDriver(String... packages){
-		Driver driver = new BoltDriver();
-		driverLogger(driver);
-		SessionFactory sessionFactory = new SessionFactory(driver, packages);
-		return sessionFactory;
+    @Nullable
+    @Value("${spring.data.neo4j.password}")
+    private String password;
+
+
+    @Bean(name = "configuration")
+    public org.neo4j.ogm.config.Configuration configuration() {
+        LOGGER.debug("-------------------------------------------------------------");
+        LOGGER.debug("   Neo4J Driver Configuration                                ");
+        LOGGER.debug("-------------------------------------------------------------");
+        LOGGER.debug("   spring.data.neo4j.URI = " + this.neo4jUri + "             ");
+        LOGGER.debug("   spring.profiles.active = " + this.springProfile + "       ");
+        LOGGER.debug("   spring.data.neo4j.username = " + this.username + "        ");
+        LOGGER.debug("   spring.data.neo4j.password = " + this.password + "        ");
+        LOGGER.debug("-------------------------------------------------------------");
+        if (this.neo4jUri != null && this.neo4jUri.startsWith("bolt:")) {
+            org.neo4j.ogm.config.Configuration configuration =
+                new org.neo4j.ogm.config.Configuration.Builder()
+                    .uri(neo4jUri)
+                    .credentials(username, password)
+                    .autoIndex(AutoIndexMode.NONE.getName())
+                    .encryptionLevel(Config.EncryptionLevel.NONE.name())
+                    .generatedIndexesOutputDir("target/var/")
+                    .generatedIndexesOutputFilename("indexes-auto.cypher")
+                    .verifyConnection(true)
+                    .build();
+            return configuration;
+        } else {
+            File db = new File( graphDbFileName );
+            GraphDatabaseService graphDb = new GraphDatabaseFactory().newEmbeddedDatabase( db );
+            Driver driver = new EmbeddedDriver(graphDb);
+            driverLogger(driver);
+            return driver.getConfiguration();
+        }
+    }
+
+	@Bean(name = "sessionFactory")
+	public SessionFactory sessionFactory(org.neo4j.ogm.config.Configuration configuration) {
+        return new SessionFactory(configuration,packages);
 	}
 
-	private SessionFactory sessionFactoryFromEmbeddedDriver(String... packages) {
-		File db = new File( graphDbFileName );
-		GraphDatabaseService graphDb = new GraphDatabaseFactory().newEmbeddedDatabase( db );
-		Driver driver = new EmbeddedDriver(graphDb);
-		driverLogger(driver);
-		SessionFactory sessionFactory = new SessionFactory(driver, packages);
-		return sessionFactory;
-	}
-
-	@Bean
-	@ConfigurationProperties(prefix="spring.data.neo4j")
-	public SessionFactory sessionFactory() {
-		LOGGER.debug("-------------------------------------------------------------");
-		LOGGER.debug("   Neo4J Driver Configuration                                ");
-		LOGGER.debug("-------------------------------------------------------------");
-		LOGGER.debug("   spring.data.neo4j.URI = "+this.neo4jUri+"                 ");
-		LOGGER.debug("   spring.profile = "+this.springProfile+"                  ");
-		LOGGER.debug("-------------------------------------------------------------");
-		if(this.neo4jUri != null){
-			if(this.neo4jUri.startsWith("bolt:")){
-				return sessionFactoryFromBoltDriver(packages);
-			} else {
-				return sessionFactoryFromEmbeddedDriver(packages);
-			}
-		} else {
-			return sessionFactoryFromEmbeddedDriver(packages);
-		}
-	}
-
-	@Bean
+	@Bean(name = "neo4jTransactionManager")
 	public Neo4jTransactionManager neo4jTransactionManager(SessionFactory sessionFactory) {
 		return new Neo4jTransactionManager(sessionFactory);
 	}
 
-	@Bean
+	@Bean(name = "jpaTransactionManager")
 	public JpaTransactionManager jpaTransactionManager(EntityManagerFactory emf) {
 		return new JpaTransactionManager(emf);
 	}
 
-
-
+    @Bean(name = "transactionManager")
+    public PlatformTransactionManager transactionManager(
+        final @Qualifier("neo4jTransactionManager") Neo4jTransactionManager neo4jTransactionManager,
+        final @Qualifier("jpaTransactionManager") JpaTransactionManager jpaTransactionManager
+    ) {
+        LOGGER.info("Initializing platform transaction manager: ");
+        return new ChainedTransactionManager(jpaTransactionManager, neo4jTransactionManager);
+    }
 
 	private void driverLogger(Driver driver){
 		if (driver == null) {
