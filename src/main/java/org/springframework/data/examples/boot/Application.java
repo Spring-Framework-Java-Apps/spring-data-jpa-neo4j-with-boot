@@ -3,7 +3,6 @@ package org.springframework.data.examples.boot;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,8 +12,6 @@ import org.springframework.data.examples.boot.jpa.domain.Customer;
 import org.springframework.data.examples.boot.jpa.service.CustomerService;
 import org.springframework.data.examples.boot.neo4j.domain.Person;
 import org.springframework.data.examples.boot.neo4j.service.PersonService;
-import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -37,19 +34,16 @@ public class Application {
 
 	@Bean
 	public CommandLineRunner demo(
-
 	    CustomerService customerService,
-        @Qualifier("jpaTransactionManager") JpaTransactionManager jpaTransactionManager,
         PersonService personService,
-        @Qualifier("neo4jTransactionManager") Neo4jTransactionManager neo4jTransactionManager,
-        @Qualifier("jpaTransactionManager") PlatformTransactionManager transactionManager
+        PlatformTransactionManager transactionManager
     ) {
 		return (args) -> {
 
 			LOGGER.info(transactionManager.getClass().getName());
 
 			// save a couple of customers
-			TransactionTemplate jpaTransactionTemplate = new TransactionTemplate(jpaTransactionManager);
+			TransactionTemplate jpaTransactionTemplate = new TransactionTemplate(transactionManager);
 			jpaTransactionTemplate.execute(new TransactionCallbackWithoutResult() {
 				@Override
 				protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -61,7 +55,7 @@ public class Application {
 				}
 			});
 
-			TransactionTemplate neo4jTransactionTemplate = new TransactionTemplate(neo4jTransactionManager);
+			TransactionTemplate neo4jTransactionTemplate = new TransactionTemplate(transactionManager);
 			neo4jTransactionTemplate.execute(new TransactionCallbackWithoutResult() {
 				@Override
 				protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -104,7 +98,7 @@ public class Application {
 			Optional<Person> person = personService.findById(1L);
 			LOGGER.info("Person found with findOne(1L):");
 			LOGGER.info("--------------------------------");
-			LOGGER.info(customer.toString());
+			LOGGER.info(person.toString());
 			LOGGER.info("");
 
 			// fetch customers by last name

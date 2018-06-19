@@ -23,10 +23,9 @@ spring:
     neo4j:
       URI: foooooooooo
       indexes:
-        auto:
-          dump:
-            dir: 'target/var/'
-            filename: 'indexes-auto.cypher'
+        auto: none
+            #dir: 'target/var/'
+            #filename: 'indexes-auto.cypher'
       repositories:
         enabled: true
   dao:

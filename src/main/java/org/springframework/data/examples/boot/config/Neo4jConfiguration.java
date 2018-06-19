@@ -63,8 +63,27 @@ public class Neo4jConfiguration {
     @Value("${spring.data.neo4j.password}")
     private String password;
 
+    @Nullable
+    @Value("${spring.data.neo4j.indexes.auto")
+    private String autoIndex;
 
-    @Bean(name = "configuration")
+    @Nullable
+    @Value("${spring.data.neo4j.indexes.auto.dump.dir}")
+    private String generatedIndexesOutputDir;
+
+    @Nullable
+    @Value("${spring.data.neo4j.indexes.auto.dump.filename}")
+    private String generatedIndexesOutputFilename;
+
+    @Nullable
+    @Value("${spring.data.neo4j.verify.connection}")
+    private Boolean verifyConnection;
+
+    @Nullable
+    @Value("${spring.data.neo4j.encryption.level}")
+    private String encryptionLevel;
+
+    @Bean
     public org.neo4j.ogm.config.Configuration configuration() {
         LOGGER.debug("-------------------------------------------------------------");
         LOGGER.debug("   Neo4J Driver Configuration                                ");
@@ -77,13 +96,13 @@ public class Neo4jConfiguration {
         if (this.neo4jUri != null && this.neo4jUri.startsWith("bolt:")) {
             org.neo4j.ogm.config.Configuration configuration =
                 new org.neo4j.ogm.config.Configuration.Builder()
-                    .uri(neo4jUri)
-                    .credentials(username, password)
-                    .autoIndex(AutoIndexMode.NONE.getName())
-                    .encryptionLevel(Config.EncryptionLevel.NONE.name())
-                    .generatedIndexesOutputDir("target/var/")
-                    .generatedIndexesOutputFilename("indexes-auto.cypher")
-                    .verifyConnection(true)
+                    .uri(this.neo4jUri)
+                    .credentials(this.username,this.password)
+                    .autoIndex(this.autoIndex)
+                    .encryptionLevel(this.encryptionLevel)
+                    //.generatedIndexesOutputDir(this.generatedIndexesOutputDir)
+                    //.generatedIndexesOutputFilename(this.generatedIndexesOutputFilename)
+                    .verifyConnection(this.verifyConnection)
                     .build();
             return configuration;
         } else {
@@ -95,27 +114,19 @@ public class Neo4jConfiguration {
         }
     }
 
-	@Bean(name = "sessionFactory")
+	@Bean
 	public SessionFactory sessionFactory(org.neo4j.ogm.config.Configuration configuration) {
         return new SessionFactory(configuration,packages);
 	}
 
-	@Bean(name = "neo4jTransactionManager")
-	public Neo4jTransactionManager neo4jTransactionManager(SessionFactory sessionFactory) {
-		return new Neo4jTransactionManager(sessionFactory);
-	}
-
-	@Bean(name = "jpaTransactionManager")
-	public JpaTransactionManager jpaTransactionManager(EntityManagerFactory emf) {
-		return new JpaTransactionManager(emf);
-	}
-
-    @Bean(name = "transactionManager")
+    @Bean
     public PlatformTransactionManager transactionManager(
-        final @Qualifier("neo4jTransactionManager") Neo4jTransactionManager neo4jTransactionManager,
-        final @Qualifier("jpaTransactionManager") JpaTransactionManager jpaTransactionManager
-    ) {
-        LOGGER.info("Initializing platform transaction manager: ");
+        SessionFactory sessionFactory,EntityManagerFactory emf){
+        LOGGER.info("Initializing Neo4jTransactionManager fromm SessionFactory");
+        Neo4jTransactionManager neo4jTransactionManager = new Neo4jTransactionManager(sessionFactory);
+        LOGGER.info("Initializing JpaTransactionManager from EntityManagerFactory");
+        JpaTransactionManager jpaTransactionManager = new JpaTransactionManager(emf);
+        LOGGER.info("Initializing platform transaction manager as ChainedTransactionManager");
         return new ChainedTransactionManager(jpaTransactionManager, neo4jTransactionManager);
     }
 
