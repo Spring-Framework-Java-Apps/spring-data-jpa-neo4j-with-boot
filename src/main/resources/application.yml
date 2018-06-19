@@ -55,24 +55,3 @@ spring:
             timeout: 240s
       verify:
         connection: true
- #   datasource:
- #     url: 'jdbc:postgresql://localhost:5432/evaluator?user=evaluator&password=evaluatorpwd&schema=public&catalog=information_schema'
- #     jdbcUrl: 'jdbc:postgresql://localhost:5432/evaluator?user=evaluator&password=evaluatorpwd&schema=public&catalog=information_schema'
- #     username: evaluator
- #     password: evaluatorpwd
- #     driverClassName: org.postgresql.Driver
- #     platform: postgresql
- #   jpa:
- #     databasePlatform: org.hibernate.dialect.PostgreSQL95Dialect
- #     openInView: true
- #     generateDdl: true
- #     showSql: true
- #     hibernate:
- #       ddlAuto: create-drop
- #     properties:
- #       hibernate:
- #         dialect: org.hibernate.dialect.PostgreSQL95Dialect
- #         globally_quoted_identifiers: true
- #         temp:
- #           use_jdbc_metadata_defaults: false
-

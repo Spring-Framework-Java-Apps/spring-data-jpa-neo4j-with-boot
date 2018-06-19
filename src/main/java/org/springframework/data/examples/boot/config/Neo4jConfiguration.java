@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -40,9 +41,15 @@ public class Neo4jConfiguration {
 
 	private final String packages[] = { "org.springframework.data.examples.boot.neo4j.domain" };
 
+	private final String graphDbFileName  = "target/var/graphDb";
+
 	@Nullable
-	@Value("spring.data.neo4j.URI")
+	@Value("${spring.data.neo4j.URI}")
 	private String neo4jUri;
+
+	@NonNull
+	@Value("${spring.profiles}")
+	private String springProfile;
 
 
 	private SessionFactory sessionFactoryFromBoltDriver(String... packages){
@@ -53,10 +60,10 @@ public class Neo4jConfiguration {
 	}
 
 	private SessionFactory sessionFactoryFromEmbeddedDriver(String... packages) {
-		File db = new File("target/var/graphDb" );
+		File db = new File( graphDbFileName );
 		GraphDatabaseService graphDb = new GraphDatabaseFactory().newEmbeddedDatabase( db );
 		Driver driver = new EmbeddedDriver(graphDb);
-		//driverLogger(driver);
+		driverLogger(driver);
 		SessionFactory sessionFactory = new SessionFactory(driver, packages);
 		return sessionFactory;
 	}
@@ -64,21 +71,6 @@ public class Neo4jConfiguration {
 	@Bean
 	@ConfigurationProperties(prefix="spring.data.neo4j")
 	public SessionFactory sessionFactory() {
-
-/*
-		private static final String CONNECTION_POOL_SIZE = "connection.pool.size";
-		private static final String ENCRYPTION_LEVEL = "encryption.level";
-		private static final String TRUST_STRATEGY = "trust.strategy";
-		private static final String TRUST_CERT_FILE = "trust.certificate.file";
-		private static final String CONNECTION_LIVENESS_CHECK_TIMEOUT = "connection.liveness.check.timeout";
-		private static final String VERIFY_CONNECTION = "verify.connection";
-		private static final String AUTO_INDEX = "indexes.auto";
-		private static final String GENERATED_INDEXES_OUTPUT_DIR = "indexes.auto.dump.dir";
-		private static final String GENERATED_INDEXES_OUTPUT_FILENAME = "indexes.auto.dump.filename";
-		private static final String NEO4J_HA_PROPERTIES_FILE = "neo4j.ha.properties.file";
-
-*/
-
 		if(this.neo4jUri != null){
 			if(this.neo4jUri.startsWith("bolt:")){
 				return sessionFactoryFromBoltDriver(packages);
@@ -101,45 +93,123 @@ public class Neo4jConfiguration {
 	}
 
 	private void driverLogger(Driver driver){
-		LOGGER.debug("---------------------------------------------------------------------------");
-		LOGGER.debug("                       Neo4J Driver Configuration                          ");
-		LOGGER.debug("---------------------------------------------------------------------------");
-			if (driver == null) {
-				LOGGER.error("                             driver == null");
+		LOGGER.debug("-------------------------------------------------------------");
+		LOGGER.debug("   Neo4J Driver Configuration                                ");
+		LOGGER.debug("-------------------------------------------------------------");
+		LOGGER.debug("   spring.profiles = "+this.springProfile+"                  ");
+		LOGGER.debug("-------------------------------------------------------------");
+		if (driver == null) {
+			LOGGER.debug("");
+			LOGGER.debug("**************************************************************");
+			LOGGER.debug("   driver == null                                             ");
+			LOGGER.debug("**************************************************************");
+			LOGGER.debug("");
+		} else {
+			if (driver.getConfiguration() == null) {
+				LOGGER.debug("");
+				LOGGER.debug("**************************************************************");
+				LOGGER.debug("   driver.getConfiguration() == null                          ");
+				LOGGER.debug("**************************************************************");
+				LOGGER.debug("");
 			} else {
-				if (driver.getConfiguration() != null) {
-					LOGGER.warn("                    driver.getConfiguration() == null");
-				} else {
-					try {
-						LOGGER.debug("getDriverClassName:    " + driver.getConfiguration().getDriverClassName());
-					} catch (NullPointerException npe) {
-						LOGGER.warn(npe.getMessage());
+				try {
+					LOGGER.debug("spring.data.neo4j.DriverClassName: " + driver.getConfiguration().getDriverClassName());
+				} catch (NullPointerException npe) {
+					LOGGER.error("spring.data.neo4j.DriverClassName:  " + npe.getMessage());
+				}
+				try {
+					LOGGER.debug("spring.data.neo4j.URI = " + driver.getConfiguration().getURI());
+				} catch (NullPointerException npe) {
+					LOGGER.error("spring.data.neo4j.URI = " + npe.getMessage());
+				}
+				try {
+					int i = 0;
+					for(String uri: driver.getConfiguration().getURIS()){
+						LOGGER.debug("spring.data.neo4j.URIS ["+ ++i +"] = " +uri);
 					}
-					LOGGER.debug("getURI:                " + driver.getConfiguration().getURI());
-					LOGGER.debug("getTrustStrategy:      " + driver.getConfiguration().getTrustStrategy());
+				} catch (NullPointerException npe) {
+					LOGGER.error("spring.data.neo4j.URIS = " + npe.getMessage());
+				}
+				try {
+					LOGGER.debug("spring.data.neo4j.trust.strategy = " + driver.getConfiguration().getTrustStrategy());
+				} catch (NullPointerException npe) {
+					LOGGER.error("spring.data.neo4j.trust.strategy = " + npe.getMessage());
+				}
+				try {
+					LOGGER.debug("spring.data.neo4j.trust.certificate.file = " + driver.getConfiguration().getTrustCertFile());
+				} catch (NullPointerException npe) {
+					LOGGER.error("spring.data.neo4j.trust.certificate.file = " + npe.getMessage());
+				}
+				try {
+					LOGGER.debug("spring.data.neo4j.connection.pool.size = " + driver.getConfiguration().getConnectionPoolSize());
+				} catch (NullPointerException npe) {
+					LOGGER.error("spring.data.neo4j.connection.pool.size = " + npe.getMessage());
+				}
+				try {
+					LOGGER.debug("spring.data.neo4j.connection.liveness.check.timeout = " + driver.getConfiguration().getConnectionLivenessCheckTimeout());
+				} catch (NullPointerException npe) {
+					LOGGER.error("spring.data.neo4j.connection.liveness.check.timeout = " + npe.getMessage());
+				}
+				try {
 					if (driver.getConfiguration().getAutoIndex() != null) {
-						LOGGER.debug("getAutoIndex:          " + driver.getConfiguration().getAutoIndex().getName());
+						LOGGER.debug("spring.data.neo4j.indexes.auto.dump.dir = " + driver.getConfiguration().getAutoIndex().getName());
 					} else {
-						LOGGER.warn("getAutoIndex:          driver.getConfiguration().getAutoIndex() == null ");
+						LOGGER.error("spring.data.neo4j.indexes.auto.dump.dir =  driver.getConfiguration().getAutoIndex() == null ");
 					}
-					LOGGER.debug("getDumpDir:            " + driver.getConfiguration().getDumpDir());
-					LOGGER.debug("getDumpFilename:       " + driver.getConfiguration().getDumpFilename());
+				} catch (NullPointerException npe) {
+					LOGGER.error("spring.data.neo4j.indexes.auto.dump.dir = " + npe.getMessage());
+				}
+				try {
+					LOGGER.debug("spring.data.neo4j.indexes.auto.dump.dir = " + driver.getConfiguration().getDumpDir());
+				} catch (NullPointerException npe) {
+					LOGGER.error("spring.data.neo4j.indexes.auto.dump.dir = " + npe.getMessage());
+				}
+				try {
+					LOGGER.debug("spring.data.neo4j.indexes.auto.dump.filename = " + driver.getConfiguration().getDumpFilename());
+				} catch (NullPointerException npe) {
+					LOGGER.error("spring.data.neo4j.indexes.auto.dump.filename = " + npe.getMessage());
+				}
+				try {
 					if (driver.getConfiguration().getCredentials() != null) {
 						if (driver.getConfiguration().getCredentials().credentials() != null) {
-							LOGGER.error("getCredentials:        " + driver.getConfiguration().getCredentials().credentials().toString());
+							try {
+								LOGGER.error("spring.data.neo4j.username = " + driver.getConfiguration().getCredentials().credentials().toString());
+							} catch (NullPointerException npe) {
+								LOGGER.error("spring.data.neo4j.username = " + npe.getMessage());
+							}
 						} else {
-							LOGGER.warn("getCredentials:        driver.getConfiguration().getCredentials().credentials() == null");
+							LOGGER.error("spring.data.neo4j.username =       driver.getConfiguration().getCredentials().credentials() == null");
 						}
 					} else {
-						LOGGER.error("getCredentials:        driver.getConfiguration().getCredentials() == null");
+						LOGGER.error("spring.data.neo4j.username =       driver.getConfiguration().getCredentials() == null");
 					}
-					LOGGER.debug("getEncryptionLevel:    " + driver.getConfiguration().getEncryptionLevel());
-					LOGGER.debug("getConnectionPoolSize: " + driver.getConfiguration().getConnectionPoolSize());
-					LOGGER.debug("getVerifyConnection:   " + driver.getConfiguration().getVerifyConnection());
-					LOGGER.debug("---------------------------------------------------------------------------");
+				} catch (NullPointerException npe) {
+					LOGGER.error("spring.data.neo4j.username = " + npe.getMessage());
 				}
+				try {
+					LOGGER.debug("spring.data.neo4j.encryption.level = " + driver.getConfiguration().getEncryptionLevel());
+				} catch (NullPointerException npe) {
+					LOGGER.error("spring.data.neo4j.encryption.level = " + npe.getMessage());
+				}
+				try {
+					LOGGER.debug("spring.data.neo4j.neo4j.ha.properties.file = " + driver.getConfiguration().getNeo4jHaPropertiesFile());
+				} catch (NullPointerException npe) {
+					LOGGER.error("spring.data.neo4j.neo4j.ha.properties.file = " + npe.getMessage());
+				}
+				try {
+					LOGGER.debug("spring.data.neo4j.connection.pool.size = " + driver.getConfiguration().getConnectionPoolSize());
+				} catch (NullPointerException npe) {
+					LOGGER.error("spring.data.neo4j.connection.pool.size = " + npe.getMessage());
+				}
+				try {
+					LOGGER.debug("spring.data.neo4j.verify.connection = " + driver.getConfiguration().getVerifyConnection());
+				} catch (NullPointerException npe) {
+					LOGGER.error("spring.data.neo4j.verify.connection = " + npe.getMessage());
+				}
+				LOGGER.debug("-------------------------------------------------------------");
 			}
-			LOGGER.debug("---------------------------------------------------------------------------");
+		}
+		LOGGER.debug("-------------------------------------------------------------");
 	}
 
 	private static final Log LOGGER = LogFactory.getLog(Neo4jConfiguration.class);
