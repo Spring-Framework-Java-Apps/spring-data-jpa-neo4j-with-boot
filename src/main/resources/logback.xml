@@ -11,7 +11,6 @@
     <logger name="com.h2database" level="INFO" />
 
     <!-- Neo4J -->
-
     <logger name="org.neo4j.ogm.config" level="DEBUG" />
     <logger name="org.neo4j.driver" level="DEBUG" />
     <logger name="org.neo4j.ogm" level="DEBUG" />
