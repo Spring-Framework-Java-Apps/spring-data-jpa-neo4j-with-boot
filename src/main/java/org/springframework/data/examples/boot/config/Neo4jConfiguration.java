@@ -48,13 +48,13 @@ public class Neo4jConfiguration {
 	private String neo4jUri;
 
 	@NonNull
-	@Value("${spring.profiles}")
+	@Value("${spring.profiles.active}")
 	private String springProfile;
 
 
 	private SessionFactory sessionFactoryFromBoltDriver(String... packages){
 		Driver driver = new BoltDriver();
-		//driverLogger(driver);
+		driverLogger(driver);
 		SessionFactory sessionFactory = new SessionFactory(driver, packages);
 		return sessionFactory;
 	}
@@ -71,6 +71,12 @@ public class Neo4jConfiguration {
 	@Bean
 	@ConfigurationProperties(prefix="spring.data.neo4j")
 	public SessionFactory sessionFactory() {
+		LOGGER.debug("-------------------------------------------------------------");
+		LOGGER.debug("   Neo4J Driver Configuration                                ");
+		LOGGER.debug("-------------------------------------------------------------");
+		LOGGER.debug("   spring.data.neo4j.URI = "+this.neo4jUri+"                 ");
+		LOGGER.debug("   spring.profile = "+this.springProfile+"                  ");
+		LOGGER.debug("-------------------------------------------------------------");
 		if(this.neo4jUri != null){
 			if(this.neo4jUri.startsWith("bolt:")){
 				return sessionFactoryFromBoltDriver(packages);
@@ -92,12 +98,10 @@ public class Neo4jConfiguration {
 		return new JpaTransactionManager(emf);
 	}
 
+
+
+
 	private void driverLogger(Driver driver){
-		LOGGER.debug("-------------------------------------------------------------");
-		LOGGER.debug("   Neo4J Driver Configuration                                ");
-		LOGGER.debug("-------------------------------------------------------------");
-		LOGGER.debug("   spring.profiles = "+this.springProfile+"                  ");
-		LOGGER.debug("-------------------------------------------------------------");
 		if (driver == null) {
 			LOGGER.debug("");
 			LOGGER.debug("**************************************************************");

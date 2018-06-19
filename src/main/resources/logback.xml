@@ -30,5 +30,5 @@
     <logger name="org.springframework.data.examples.boot.config" level="DEBUG" />
 
     <!-- Everything Else -->
-    <root level="INFO"></root>
+    <root level="INFO" />
 </configuration>

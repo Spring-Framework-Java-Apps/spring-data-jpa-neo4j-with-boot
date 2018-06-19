@@ -1,6 +1,5 @@
 package org.springframework.data.examples.boot;
 
-import java.util.Optional;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,6 +18,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.util.Optional;
+
+
 /**
  * @author Mark Angrish
  */
@@ -34,6 +36,8 @@ public class Application {
 	@Bean
 	public CommandLineRunner demo(CustomerRepository customerRepository, PlatformTransactionManager jpaTransactionManager, PersonRepository personRepository, Neo4jTransactionManager neo4jTransactionManager) {
 		return (args) -> {
+
+
 
 			LOGGER.info(jpaTransactionManager.getClass().getName());
 
@@ -110,6 +114,9 @@ public class Application {
 			Person jackBauer = personRepository.findByName("Jack Bauer");
 			LOGGER.info(jackBauer.toString());
 			LOGGER.info("");
+
+
 		};
+
 	}
 }

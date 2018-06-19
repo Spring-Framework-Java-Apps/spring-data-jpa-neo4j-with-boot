@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: default
+    active: embedded
   jpa:
     databasePlatform: org.hibernate.dialect.H2Dialect
     generateDdl: true

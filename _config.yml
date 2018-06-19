@@ -1,0 +1,5 @@
+theme: jekyll-theme-slate
+title: Spring Data JPA + Neo4j with Spring Boot
+description: Demo web project for Spring Boot using Spring Data Neo4j working together with Spring Data JPA
+
+
