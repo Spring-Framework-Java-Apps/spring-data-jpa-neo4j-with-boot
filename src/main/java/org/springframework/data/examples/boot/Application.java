@@ -29,6 +29,11 @@ public class Application implements ApplicationListener<ApplicationReadyEvent> {
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
+        LOGGER.info(" ");
+        LOGGER.info(" ================================ ");
+        LOGGER.info(" ===== Application Ready   ====== ");
+        LOGGER.info(" ================================ ");
+        LOGGER.info(" ");
         processService.runDatabaseExample();;
         SpringApplication.exit(event.getApplicationContext());
     }
