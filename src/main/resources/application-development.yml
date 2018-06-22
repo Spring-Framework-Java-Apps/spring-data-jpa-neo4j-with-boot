@@ -1,5 +1,7 @@
 spring:
-  profiles: development
+  profiles:
+    active:
+      - development
   jpa:
     databasePlatform: org.hibernate.dialect.H2Dialect
     generateDdl: true

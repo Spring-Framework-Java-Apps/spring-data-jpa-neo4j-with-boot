@@ -1,4 +1,4 @@
-package org.springframework.data.examples.boot.config;
+package org.springframework.data.examples.boot.config.helper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,9 +13,9 @@ public class ConfigurationLoggerImpl implements ConfigurationLogger {
     public void driverLogger(Driver driver) {
         if (driver == null) {
             LOGGER.debug("");
-            LOGGER.debug("**************************************************************");
-            LOGGER.debug("   driver == null                                             ");
-            LOGGER.debug("**************************************************************");
+            LOGGER.debug("-------------------------------------------------------------");
+            LOGGER.debug("   driver == null                                            ");
+            LOGGER.debug("-------------------------------------------------------------");
             LOGGER.debug("");
         } else {
             configurationLogger( driver.getConfiguration() );
@@ -27,13 +27,13 @@ public class ConfigurationLoggerImpl implements ConfigurationLogger {
     public void configurationLogger(Configuration configuration) {
         if (configuration == null) {
             LOGGER.debug("");
-            LOGGER.debug("**************************************************************");
-            LOGGER.debug("   configuration == null                                      ");
-            LOGGER.debug("**************************************************************");
+            LOGGER.debug("-------------------------------------------------------------");
+            LOGGER.debug("   configuration == null                                     ");
+            LOGGER.debug("-------------------------------------------------------------");
             LOGGER.debug("");
         } else {
             LOGGER.debug("");
-            LOGGER.debug("**************************************************************");
+            LOGGER.debug("-------------------------------------------------------------");
             try {
                 LOGGER.debug("spring.data.neo4j.DriverClassName: " + configuration.getDriverClassName());
             } catch (NullPointerException npe) {
@@ -129,8 +129,6 @@ public class ConfigurationLoggerImpl implements ConfigurationLogger {
                 LOGGER.error("spring.data.neo4j.verify.connection = " + npe.getMessage());
             }
             LOGGER.debug("-------------------------------------------------------------");
-
-            LOGGER.debug("**************************************************************");
             LOGGER.debug("");
         }
     }

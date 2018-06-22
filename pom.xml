@@ -172,7 +172,7 @@
         <profile>
             <id>development</id>
             <properties>
-                <spring.profiles>development</spring.profiles>
+                <spring.profiles.active>development</spring.profiles.active>
             </properties>
             <dependencies>
                 <dependency>
@@ -210,7 +210,7 @@
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <configuration>
                             <additionalProperties>
-                                <spring.profiles>development</spring.profiles>
+                                <spring.profiles.active>development</spring.profiles.active>
                             </additionalProperties>
                         </configuration>
                     </plugin>

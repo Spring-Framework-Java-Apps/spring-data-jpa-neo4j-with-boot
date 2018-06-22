@@ -1,5 +1,6 @@
 spring:
-  profiles: production
+  profiles:
+    active: development
   jpa:
     databasePlatform: org.hibernate.dialect.PostgreSQL95Dialect
     generateDdl: true

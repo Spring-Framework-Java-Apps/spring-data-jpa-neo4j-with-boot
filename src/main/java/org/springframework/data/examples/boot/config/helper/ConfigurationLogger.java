@@ -1,4 +1,4 @@
-package org.springframework.data.examples.boot.config;
+package org.springframework.data.examples.boot.config.helper;
 
 import org.neo4j.ogm.driver.Driver;
 
