@@ -5,22 +5,31 @@ This example show you how to wire up a Spring Boot application with Spring Data 
 
 ## Dependencies
 
-* Spring Data JPA 1.11.0.BUILD-SNAPSHOT (Ingalls Release Train)
-* Spring Data Neo4j 4.2.0.BUILD-SNAPSHOT (Ingalls Release Train)
+* Spring Data JPA
+* Spring Data Neo4j
 * Spring Boot 2.0.3.RELEASE
+* Neo4j Graph Database 3.1.x 
 * H2 SQL Database 1.4.x
-* Neo4j Graph Database 3.4.x (will also work with 2.3.x/3.0.x releases)
+* PostgreSQL Database 10.0.x
 
 ## Running the Application
 
 Simply do:
 
 ```
-mvn spring-boot:run
+./mvnw -Pdevelopment -Dspring.profiles.active=development clean spring-boot:run
+```
+
+or with Standalone Neo4J-Server and PostgreSQL 10 Server for JPA:
+
+```
+./mvnw-e -Pproduction -Dspring.profiles.active=production clean spring-boot:run
 ```
 
 or run in your favourite IDE.
 
 ### Expected behaviour
 
-When you run the Application it will load some data into both databases and query them. As the databases are in memory you won't have to configure a database to run it.
+When you run the Application it will load some data into both databases and query them. 
+
+With Development Profile: As the databases are in memory you won't have to configure a database to run it.
