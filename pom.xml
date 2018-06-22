@@ -108,32 +108,41 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
-            <!--
             <properties>
-                <spring.profile>default</spring.profile>
                 <spring.profiles>default</spring.profiles>
-                <spring.profiles.active>default</spring.profiles.active>
             </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.neo4j</groupId>
                     <artifactId>neo4j-ogm-embedded-driver</artifactId>
+                    <scope>compile</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                    <scope>compile</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.neo4j</groupId>
+                    <artifactId>neo4j</artifactId>
+                    <scope>compile</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.neo4j</groupId>
+                    <artifactId>neo4j-ogm-api</artifactId>
+                    <scope>compile</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.neo4j</groupId>
+                    <artifactId>neo4j-ogm-core</artifactId>
+                    <scope>compile</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.neo4j</groupId>
                     <artifactId>neo4j-ogm-bolt-driver</artifactId>
                     <scope>compile</scope>
                 </dependency>
-                <dependency>
-                    <groupId>com.h2database</groupId>
-                    <artifactId>h2</artifactId>
-                </dependency>
-                <dependency>
-                    <groupId>org.neo4j</groupId>
-                    <artifactId>neo4j</artifactId>
-                </dependency>
             </dependencies>
-            -->
             <build>
                 <plugins>
                     <plugin>
@@ -152,11 +161,9 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <!--
                         <configuration>
                             <skipTests>true</skipTests>
                         </configuration>
-                        -->
                     </plugin>
                 </plugins>
             </build>
@@ -164,20 +171,13 @@
 
         <profile>
             <id>development</id>
-            <!--
-          <properties>
-              <spring.profiles>development</spring.profiles>
-          </properties>
-
+            <properties>
+                <spring.profiles>development</spring.profiles>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.neo4j</groupId>
                     <artifactId>neo4j-ogm-embedded-driver</artifactId>
-                </dependency>
-                <dependency>
-                    <groupId>org.neo4j</groupId>
-                    <artifactId>neo4j-ogm-bolt-driver</artifactId>
-                    <scope>compile</scope>
                 </dependency>
                 <dependency>
                     <groupId>com.h2database</groupId>
@@ -187,20 +187,32 @@
                     <groupId>org.neo4j</groupId>
                     <artifactId>neo4j</artifactId>
                 </dependency>
+                <dependency>
+                    <groupId>org.neo4j</groupId>
+                    <artifactId>neo4j-ogm-api</artifactId>
+                    <scope>compile</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.neo4j</groupId>
+                    <artifactId>neo4j-ogm-core</artifactId>
+                    <scope>compile</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.neo4j</groupId>
+                    <artifactId>neo4j-ogm-bolt-driver</artifactId>
+                    <scope>compile</scope>
+                </dependency>
             </dependencies>
-              -->
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
-                        <!--
                         <configuration>
                             <additionalProperties>
                                 <spring.profiles>development</spring.profiles>
                             </additionalProperties>
                         </configuration>
-                        -->
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -221,6 +233,9 @@
 
         <profile>
             <id>production</id>
+            <properties>
+                <spring.profiles>production</spring.profiles>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.neo4j</groupId>
@@ -251,13 +266,11 @@
                     <plugin>
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
-                        <!--
                         <configuration>
                             <additionalProperties>
                                 <spring.profiles>production</spring.profiles>
                             </additionalProperties>
                         </configuration>
-                        -->
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
