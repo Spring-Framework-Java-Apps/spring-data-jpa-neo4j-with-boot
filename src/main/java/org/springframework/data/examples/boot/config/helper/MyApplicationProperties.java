@@ -118,14 +118,14 @@ public class MyApplicationProperties {
         LOGGER.debug("-------------------------------------------------------------");
         LOGGER.debug("   Neo4J Driver Configuration                                ");
         LOGGER.debug("-------------------------------------------------------------");
-        LOGGER.debug("   spring.profiles.active = " + this.springProfilesActive + "   ");
+        LOGGER.debug("   spring.profiles.active = " + this.springProfilesActive + "");
         LOGGER.debug("-------------------------------------------------------------");
-        LOGGER.debug("   spring.data.neo4j.URI = " + this.neo4jUri + "        ");
+        LOGGER.debug("   spring.data.neo4j.URI = " + this.neo4jUri + "             ");
         LOGGER.debug("-------------------------------------------------------------");
         LOGGER.debug("   spring.datasource.driver-class-name = " + this.datasourceDriverClassName + " ");
-        LOGGER.debug("   spring.datasource.url = " + this.datasourceUrl + " ");
-        LOGGER.debug("   spring.datasource.url = " + this.datasourceUsername + " ");
-        LOGGER.debug("   spring.datasource.url = " + this.datasourcePassword + " ");
+        LOGGER.debug("   spring.datasource.url = " + this.datasourceUrl + "        ");
+        LOGGER.debug("   spring.datasource.url = " + this.datasourceUsername + "   ");
+        LOGGER.debug("   spring.datasource.url = " + this.datasourcePassword + "   ");
         LOGGER.debug("-------------------------------------------------------------");
     }
 

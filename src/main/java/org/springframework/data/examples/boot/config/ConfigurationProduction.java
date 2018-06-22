@@ -47,26 +47,6 @@ public class ConfigurationProduction {
         "org.springframework.data.examples.boot.neo4j.domain"
     };
 
-	@Nullable
-	@Value("${spring.data.neo4j.URI}")
-	private String neo4jUri;
-
-	/*
-	@NonNull
-	@Value("${spring.profiles}")
-	private String springProfile;
-    */
-
-	/*
-    @NonNull
-    @Value("${spring.profiles.active}")
-    private String springProfileActive;
-    */
-
-    @NonNull
-    @Value("${spring.profiles.active}")
-    private String springProfilesActive;
-
     @NonNull
     @Value("${spring.data.neo4j.username}")
     private String username="neo4j";
@@ -75,18 +55,6 @@ public class ConfigurationProduction {
     @Value("${spring.data.neo4j.password}")
     private String password="secret";
 
-    //@Nullable
-    //@Value("${spring.data.neo4j.indexes.auto")
-    //private String autoIndex = "dump";
-
-    @NonNull
-    @Value("${spring.data.neo4j.indexes.auto.dump.dir}")
-    private String generatedIndexesOutputDir="target";
-
-    @NonNull
-    @Value("${spring.data.neo4j.indexes.auto.dump.filename}")
-    private String generatedIndexesOutputFilename="neo4j_indexes.cypher";
-
     @NonNull
     @Value("${spring.data.neo4j.verify.connection}")
     private Boolean verifyConnection = false;
@@ -94,23 +62,6 @@ public class ConfigurationProduction {
     @Nullable
     @Value("${spring.data.neo4j.encryption.level}")
     private String encryptionLevel = "NONE";
-/*
-    @Nullable
-    @Value("${spring.datasource.driver-class-name}")
-    private String datasourceDriverCclassName;
-
-    @Nullable
-    @Value("${spring.datasource.url}")
-    private String datasourceUrl;
-
-    @Nullable
-    @Value("${spring.datasource.username}")
-    private String datasourceUsername;
-
-    @Nullable
-    @Value("${spring.datasource.password}")
-    private String datasourcePassword;
-    */
 
     @Bean
     public org.neo4j.ogm.config.Configuration configuration() {
@@ -123,12 +74,11 @@ public class ConfigurationProduction {
         LOGGER.debug("-------------------------------------------------------------");
         org.neo4j.ogm.config.Configuration configuration =
             new org.neo4j.ogm.config.Configuration.Builder()
-                .uri(this.neo4jUri)
+                .uri(this.myApplicationProperties.getNeo4jUri())
                 .credentials(this.username,this.password)
                 .encryptionLevel(this.encryptionLevel)
-                //.autoIndex(this.autoIndex)
-                .generatedIndexesOutputDir(this.generatedIndexesOutputDir)
-                .generatedIndexesOutputFilename(this.generatedIndexesOutputFilename)
+                .generatedIndexesOutputDir(myApplicationProperties.getGeneratedIndexesOutputDir())
+                .generatedIndexesOutputFilename(myApplicationProperties.getGeneratedIndexesOutputFilename())
                 .verifyConnection(this.verifyConnection)
                 .build();
         configurationLogger.configurationLogger(configuration);
