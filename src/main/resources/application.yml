@@ -1,6 +1,6 @@
 spring:
   profiles:
     active:
-      - development
-      - production
       - default
+    import:
+      - development

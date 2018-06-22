@@ -10,6 +10,7 @@ import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -39,6 +40,7 @@ import java.io.File;
 	transactionManagerRef = "jpaTransactionManager"
 )
 @EnableTransactionManagement
+@EnableConfigurationProperties(MyApplicationProperties.class)
 public class ConfigurationDevelopment {
 
     private final String packages[] = { "org.springframework.data.examples.boot.neo4j.domain" };
@@ -52,31 +54,27 @@ public class ConfigurationDevelopment {
 	private MyApplicationProperties myApplicationProperties;
 
     @Bean
-    public org.neo4j.ogm.config.Configuration configuration() {
+    public Driver neo4jDriver() {
         myApplicationProperties.log();
         LOGGER.debug("   Neo4J Driver Configuration = Embedded : " + this.graphDbFileName + " ");
         LOGGER.debug("-------------------------------------------------------------");
         File db = new File( graphDbFileName );
         GraphDatabaseService graphDb = new GraphDatabaseFactory().newEmbeddedDatabase( db );
         Driver driver = new EmbeddedDriver(graphDb);
-        if (driver == null) {
+        return driver;
+    }
+
+    @Required
+    @Bean
+	public SessionFactory sessionFactory(Driver neo4jDriver) {
+        if (neo4jDriver == null) {
             LOGGER.error("");
             LOGGER.error("-------------------------------------------------------------");
             LOGGER.error("   driver == null                                            ");
             LOGGER.error("-------------------------------------------------------------");
             LOGGER.error("");
-            return null;
-        } else {
-            org.neo4j.ogm.config.Configuration configuration = driver.getConfiguration();
-            configurationLogger.configurationLogger(configuration);
-            return configuration;
         }
-    }
-
-    @Required
-    @Bean
-	public SessionFactory sessionFactory(org.neo4j.ogm.config.Configuration configuration ) {
-        return new SessionFactory(configuration,packages);
+        return new SessionFactory(neo4jDriver,packages);
 	}
 
     @Bean("jpaTransactionManager")
