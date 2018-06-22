@@ -3,34 +3,19 @@ package org.springframework.data.examples.boot.config.helper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.neo4j.ogm.config.Configuration;
-import org.neo4j.ogm.driver.Driver;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ConfigurationLoggerImpl implements ConfigurationLogger {
 
     @Override
-    public void driverLogger(Driver driver) {
-        if (driver == null) {
-            LOGGER.debug("");
-            LOGGER.debug("-------------------------------------------------------------");
-            LOGGER.debug("   driver == null                                            ");
-            LOGGER.debug("-------------------------------------------------------------");
-            LOGGER.debug("");
-        } else {
-            configurationLogger( driver.getConfiguration() );
-        }
-        LOGGER.debug("-------------------------------------------------------------");
-    }
-
-    @Override
     public void configurationLogger(Configuration configuration) {
         if (configuration == null) {
-            LOGGER.debug("");
-            LOGGER.debug("-------------------------------------------------------------");
-            LOGGER.debug("   configuration == null                                     ");
-            LOGGER.debug("-------------------------------------------------------------");
-            LOGGER.debug("");
+            LOGGER.error("");
+            LOGGER.error("-------------------------------------------------------------");
+            LOGGER.error("   configuration == null                                     ");
+            LOGGER.error("-------------------------------------------------------------");
+            LOGGER.error("");
         } else {
             LOGGER.debug("");
             LOGGER.debug("-------------------------------------------------------------");

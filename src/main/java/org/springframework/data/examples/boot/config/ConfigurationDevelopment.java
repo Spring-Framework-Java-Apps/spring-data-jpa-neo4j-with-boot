@@ -10,16 +10,14 @@ import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.examples.boot.config.helper.ConfigurationLogger;
+import org.springframework.data.examples.boot.config.helper.MyApplicationProperties;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -50,44 +48,29 @@ public class ConfigurationDevelopment {
 	@Autowired
 	private ConfigurationLogger configurationLogger;
 
-	@Nullable
-	@Value("${spring.data.neo4j.URI}")
-	private String neo4jUri;
-
-	//@NonNull
-	//@Value("${spring.profiles}")
-	//private String springProfile;
-
-    @NonNull
-    @Value("${spring.profiles.active}")
-    private String springProfilesActive;
-
-    @Nullable
-    @Value("${spring.datasource.url}")
-    private String datasourceUrl;
-
-    @Nullable
-    @Value("${spring.datasource.driver-class-name}")
-    private String datasourceDriverClassName;
+    @Autowired
+	private MyApplicationProperties myApplicationProperties;
 
     @Bean
     public org.neo4j.ogm.config.Configuration configuration() {
-        LOGGER.debug("-------------------------------------------------------------");
-        LOGGER.debug("   Neo4J Driver Configuration                                ");
-        LOGGER.debug("-------------------------------------------------------------");
-        LOGGER.debug("   spring.data.neo4j.URI =      " + this.neo4jUri + "        ");
-        //LOGGER.debug("   spring.profile =             " + this.springProfile + "   ");
-        LOGGER.debug("   spring.profiles.active =             " + this.springProfilesActive + "   ");
-        LOGGER.debug("   spring.datasource.driver-class-name = " + this.datasourceDriverClassName + " ");
-        LOGGER.debug("   spring.datasource.url = " + this.datasourceUrl + " ");
-        LOGGER.debug("-------------------------------------------------------------");
-        LOGGER.debug("   Neo4J Driver Configuration = " + this.graphDbFileName + " ");
+        myApplicationProperties.log();
+        LOGGER.debug("   Neo4J Driver Configuration = Embedded : " + this.graphDbFileName + " ");
         LOGGER.debug("-------------------------------------------------------------");
         File db = new File( graphDbFileName );
         GraphDatabaseService graphDb = new GraphDatabaseFactory().newEmbeddedDatabase( db );
         Driver driver = new EmbeddedDriver(graphDb);
-        configurationLogger.driverLogger(driver);
-        return driver.getConfiguration();
+        if (driver == null) {
+            LOGGER.error("");
+            LOGGER.error("-------------------------------------------------------------");
+            LOGGER.error("   driver == null                                            ");
+            LOGGER.error("-------------------------------------------------------------");
+            LOGGER.error("");
+            return null;
+        } else {
+            org.neo4j.ogm.config.Configuration configuration = driver.getConfiguration();
+            configurationLogger.configurationLogger(configuration);
+            return configuration;
+        }
     }
 
     @Required

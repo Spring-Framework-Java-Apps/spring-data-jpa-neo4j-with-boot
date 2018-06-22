@@ -28,6 +28,7 @@ spring:
   data:
     neo4j:
       URI: foooooooooo
+      graphDbFileName: 'target/var/graphDb'
       indexes:
         auto:
           dump:

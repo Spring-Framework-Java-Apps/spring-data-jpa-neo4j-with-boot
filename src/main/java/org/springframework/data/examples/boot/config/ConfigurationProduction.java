@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.examples.boot.config.helper.ConfigurationLogger;
+import org.springframework.data.examples.boot.config.helper.MyApplicationProperties;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
@@ -37,6 +38,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 )
 @EnableTransactionManagement
 public class ConfigurationProduction {
+
+    @Autowired
+    private MyApplicationProperties myApplicationProperties;
+
 
     private final String packages[] = {
         "org.springframework.data.examples.boot.neo4j.domain"
@@ -89,27 +94,30 @@ public class ConfigurationProduction {
     @Nullable
     @Value("${spring.data.neo4j.encryption.level}")
     private String encryptionLevel = "NONE";
+/*
+    @Nullable
+    @Value("${spring.datasource.driver-class-name}")
+    private String datasourceDriverCclassName;
 
     @Nullable
     @Value("${spring.datasource.url}")
     private String datasourceUrl;
 
     @Nullable
-    @Value("${spring.datasource.driver-class-name}")
-    private String datasourceDriverCclassName;
+    @Value("${spring.datasource.username}")
+    private String datasourceUsername;
+
+    @Nullable
+    @Value("${spring.datasource.password}")
+    private String datasourcePassword;
+    */
 
     @Bean
     public org.neo4j.ogm.config.Configuration configuration() {
+        myApplicationProperties.log();
         LOGGER.debug("-------------------------------------------------------------");
-        LOGGER.debug("   Neo4J Driver Configuration                                ");
-        LOGGER.debug("-------------------------------------------------------------");
-        LOGGER.debug("   spring.data.neo4j.URI =      " + this.neo4jUri + "        ");
-        //LOGGER.debug("   spring.profiles =            " + this.springProfile + "   ");
-        LOGGER.debug("   spring.profiles.active = " + this.springProfilesActive + "   ");
         LOGGER.debug("   spring.data.neo4j.username = " + this.username + "        ");
         LOGGER.debug("   spring.data.neo4j.password = " + this.password + "        ");
-        LOGGER.debug("   spring.datasource.driver-class-name = " + this.datasourceDriverCclassName + " ");
-        LOGGER.debug("   spring.datasource.url = " + this.datasourceUrl + " ");
         LOGGER.debug("-------------------------------------------------------------");
         LOGGER.debug("   Neo4J Driver Configuration =  bolt                        ");
         LOGGER.debug("-------------------------------------------------------------");
