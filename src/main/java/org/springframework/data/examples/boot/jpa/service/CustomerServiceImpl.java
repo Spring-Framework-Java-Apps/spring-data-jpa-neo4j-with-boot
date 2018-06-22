@@ -10,11 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static org.springframework.transaction.annotation.Propagation.REQUIRED;
-import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 
 @Service
-@Transactional(propagation=REQUIRED,readOnly=true)
+@Transactional("jpaTransactionManager")
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
@@ -40,8 +38,12 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    @Transactional(propagation=REQUIRES_NEW,readOnly=false)
     public Customer save(Customer entity) {
         return this.customerRepository.save(entity);
+    }
+
+    @Override
+    public void deleteAll() {
+        this.customerRepository.deleteAll();
     }
 }

@@ -3,84 +3,111 @@ package org.springframework.data.examples.boot;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.data.examples.boot.jpa.domain.Customer;
 import org.springframework.data.examples.boot.jpa.service.CustomerService;
 import org.springframework.data.examples.boot.neo4j.domain.Person;
 import org.springframework.data.examples.boot.neo4j.service.PersonService;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.Optional;
+import java.util.*;
 
 
 /**
  * @author Mark Angrish
  */
 @SpringBootApplication(exclude = Neo4jDataAutoConfiguration.class)
-public class Application {
+public class Application implements CommandLineRunner, ApplicationListener<ApplicationReadyEvent> {
 
 	private static final Log LOGGER = LogFactory.getLog(Application.class);
 
 	public static void main(String[] args) {
-		SpringApplication.run(Application.class);
+		SpringApplication.run(Application.class,args);
 	}
 
-	@Bean
-	public CommandLineRunner demo(
-	    CustomerService customerService,
-        PersonService personService,
-        PlatformTransactionManager transactionManager
-    ) {
-		return (args) -> {
+	@Autowired
+    private CustomerService customerService;
 
-			LOGGER.info(transactionManager.getClass().getName());
+    @Autowired
+    private PersonService personService;
 
-			// save a couple of customers
-			TransactionTemplate jpaTransactionTemplate = new TransactionTemplate(transactionManager);
-			jpaTransactionTemplate.execute(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    customerService.save(new Customer("Jack", "Bauer"));
-                    customerService.save(new Customer("Chloe", "O'Brian"));
-                    customerService.save(new Customer("Kim", "Bauer"));
-                    customerService.save(new Customer("David", "Palmer"));
-                    customerService.save(new Customer("Michelle", "Dessler"));
-				}
-			});
+	    public void run(String... args) throws Exception {
+            LOGGER.info("-----------------------------------------");
 
-			TransactionTemplate neo4jTransactionTemplate = new TransactionTemplate(transactionManager);
-			neo4jTransactionTemplate.execute(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					// also save them as people
-                    personService.save(new Person("Jack Bauer"));
-                    personService.save(new Person("Chloe O'Brian"));
-                    personService.save(new Person("Kim Bauer"));
-                    personService.save(new Person("David Palmer"));
-                    personService.save(new Person("Michelle Dessler"));
-				}
-			});
+            LOGGER.info("delete all Persons and Customers. ");
+            personService.deleteAll();
+            customerService.deleteAll();
+            LOGGER.info("-----------------------------------------");
+
+            LOGGER.info("save a couple of customers (JPA):");
+            LOGGER.info("-----------------------------------------");
+            Customer c1 = customerService.save(new Customer("Jack", "Bauer"));
+            Customer c2 = customerService.save(new Customer("Chloe", "O'Brian"));
+            Customer c3 = customerService.save(new Customer("Kim", "Bauer"));
+            Customer c4 = customerService.save(new Customer("David", "Palmer"));
+            Customer c5 = customerService.save(new Customer("Michelle", "Dessler"));
+
+            c1.worksWith(c2);
+            c1.worksWith(c3);
+            c1.worksWith(c4);
+            c1.worksWith(c5);
+
+            c1 = customerService.save(c1);
+
+            LOGGER.info("c1 :"+c1.toString());
+            LOGGER.info("c2 :"+c2.toString());
+            LOGGER.info("c3 :"+c3.toString());
+            LOGGER.info("c4 :"+c4.toString());
+            LOGGER.info("c5 :"+c5.toString());
+            LOGGER.info("-----------------------------------------");
+
+            LOGGER.info("also save them as people (Neo4J):");
+            LOGGER.info("-----------------------------------------");
+            Person p1 = new Person("Jack Bauer");
+            Person p2 = new Person("Chloe O'Brian");
+            Person p3 = new Person("Kim Bauer");
+            Person p4 = new Person("David Palmer");
+            Person p5 = new Person("Michelle Dessler");
+
+            p1 = personService.save(p1);
+            p2 = personService.save(p2);
+            p3 = personService.save(p3);
+            p4 = personService.save(p4);
+            p5 = personService.save(p5);
+
+            p1.worksWith(p2);
+            p1.worksWith(p3);
+            p1.worksWith(p4);
+            p1.worksWith(p5);
+
+            p1 = personService.save(p1);
+
+            LOGGER.info("p1 :"+p1.toString());
+            LOGGER.info("p2 :"+p2.toString());
+            LOGGER.info("p3 :"+p3.toString());
+            LOGGER.info("p4 :"+p4.toString());
+            LOGGER.info("p5 :"+p5.toString());
+            LOGGER.info("-----------------------------------------");
+
 
 			// fetch all customers
-			LOGGER.info("Customers found with findAll():");
-			LOGGER.info("-------------------------------");
-			Iterable<Customer> customers = jpaTransactionTemplate.execute(status -> customerService.findAll());
+			LOGGER.info("Customers found with findAll(): ");
+            LOGGER.info("-----------------------------------------");
+			Iterable<Customer> customers = customerService.findAll();
 			for (Customer customer : customers) {
 				LOGGER.info(customer.toString());
 			}
 			LOGGER.info("");
 
 			// fetch all people
-			LOGGER.info("People found with findAll():");
-			LOGGER.info("-------------------------------");
-			Iterable<Person> people = neo4jTransactionTemplate.execute(status -> personService.findAll());
+			LOGGER.info("People found with findAll(): ");
+            LOGGER.info("-----------------------------------------");
+			Iterable<Person> people = personService.findAll();
 
 			for (Person person : people) {
 				LOGGER.info(person.toString());
@@ -88,35 +115,41 @@ public class Application {
 			LOGGER.info("");
 
 			// fetch an individual customer by ID
-			Optional<Customer> customer = customerService.findById(1L);
-			LOGGER.info("Customer found with findOne(1L):");
-			LOGGER.info("--------------------------------");
+			Optional<Customer> customer = customerService.findById(c1.getId());
+			LOGGER.info("Customer found with findOne("+c1.getId()+": ");
+            LOGGER.info("-----------------------------------------");
 			LOGGER.info(customer.toString());
 			LOGGER.info("");
 
 			// fetch an individual person by ID
-			Optional<Person> person = personService.findById(1L);
-			LOGGER.info("Person found with findOne(1L):");
-			LOGGER.info("--------------------------------");
+			Optional<Person> person = personService.findById(p1.getId());
+			LOGGER.info("Person found with findOne("+p1.getId()+"): ");
+            LOGGER.info("-----------------------------------------");
 			LOGGER.info(person.toString());
 			LOGGER.info("");
 
 			// fetch customers by last name
 			LOGGER.info("Customer found with findByLastName('Bauer'):");
-			LOGGER.info("--------------------------------------------");
+            LOGGER.info("-----------------------------------------");
 			for (Customer bauer : customerService.findByLastName("Bauer")) {
 				LOGGER.info(bauer.toString());
 			}
 			LOGGER.info("");
 
 			// fetch person by their name
-			LOGGER.info("Customer found with findByLastName('Bauer'):");
+			LOGGER.info("Person found with findByName('Jack Bauer'):");
 			LOGGER.info("--------------------------------------------");
 			Person jackBauer = personService.findByName("Jack Bauer");
 			LOGGER.info(jackBauer.toString());
 			LOGGER.info("");
 
-		};
-
+            LOGGER.info("We are Done Here :)");
 	}
+
+
+    @Override
+    public void onApplicationEvent(ApplicationReadyEvent event) {
+        LOGGER.info("HEY, We are READY Here :)");
+        SpringApplication.exit(event.getApplicationContext());
+    }
 }

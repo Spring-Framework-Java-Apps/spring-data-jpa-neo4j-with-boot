@@ -1,6 +1,9 @@
 spring:
   profiles:
-    active: default
+    active:
+      - development
+      - production
+      - default
   jpa:
     databasePlatform: org.hibernate.dialect.H2Dialect
     generateDdl: true
@@ -10,43 +13,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
-        globally_quoted_identifiers: true
-        temp:
-          use_jdbc_metadata_defaults: false
-  datasource:
-    url: 'jdbc:h2:~/test'
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
-    platform: h2
-  data:
-    neo4j:
-      URI: foooooooooo
-      indexes:
-        auto: none
-            #dir: 'target/var/'
-            #filename: 'indexes-auto.cypher'
-      repositories:
-        enabled: true
-  dao:
-    exceptiontranslation:
-      enabled: true
----
-spring:
-  profiles:
-    active: embedded
-  jpa:
-    databasePlatform: org.hibernate.dialect.H2Dialect
-    generateDdl: true
-    show-sql: true
-    hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
-        globally_quoted_identifiers: true
-        temp:
-          use_jdbc_metadata_defaults: false
   datasource:
     url: 'jdbc:h2:~/test'
     username: sa
@@ -68,13 +34,18 @@ spring:
       enabled: true
 ---
 spring:
-  profiles:
-    active: travis
+  profiles: default
+---
+spring:
+  profiles: development
+---
+spring:
+  profiles: production
   jpa:
     databasePlatform: org.hibernate.dialect.PostgreSQL95Dialect
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQL95Dialect
+        dialect: org.hibernate.dialect.PostgreSQL94Dialect
         globally_quoted_identifiers: true
         temp:
           use_jdbc_metadata_defaults: false
@@ -96,6 +67,7 @@ spring:
           size: 50
         liveness:
           check:
-            timeout: 240s
+            timeout: 240
       verify:
         connection: true
+

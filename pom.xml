@@ -51,6 +51,16 @@
                 <artifactId>neo4j</artifactId>
                 <version>${neo4j.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -84,16 +94,13 @@
            <scope>compile</scope>
        </dependency>
 
-    </dependencies>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
+        </dependency>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+    </dependencies>
 
     <profiles>
         <profile>
@@ -102,6 +109,8 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
+                <spring.profile>default</spring.profile>
+                <spring.profiles>default</spring.profiles>
                 <spring.profiles.active>default</spring.profiles.active>
             </properties>
             <dependencies>
@@ -126,6 +135,17 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <additionalProperties>
+                                <spring.profile>default</spring.profile>
+                                <spring.profiles>default</spring.profiles>
+                                <spring.profiles.active>default</spring.profiles.active>
+                            </additionalProperties>
+                        </configuration>
+                    </plugin>
+                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
@@ -137,13 +157,19 @@
         </profile>
 
         <profile>
-            <id>embedded</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <spring.profiles.active>embedded</spring.profiles.active>
-            </properties>
+            <id>development</id>
+            <!--
+          <activation>
+              <activeByDefault>false</activeByDefault>
+          </activation>
+           -->
+
+          <properties>
+              <spring.profile>development</spring.profile>
+              <spring.profiles>development</spring.profiles>
+              <spring.profiles.active>development</spring.profiles.active>
+          </properties>
+
             <dependencies>
                 <dependency>
                     <groupId>org.neo4j</groupId>
@@ -166,11 +192,24 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <additionalProperties>
+                                <spring.profile>development</spring.profile>
+                                <spring.profiles>development</spring.profiles>
+                                <spring.profiles.active>development</spring.profiles.active>
+                            </additionalProperties>
+                        </configuration>
+                    </plugin>
+                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <systemPropertyVariables>
-                                <spring.profiles.active>embedded</spring.profiles.active>
+                                <spring.profile>development</spring.profile>
+                                <spring.profiles>development</spring.profiles>
+                                <spring.profiles.active>development</spring.profiles.active>
                                 <failsafe.skipAfterFailureCount>1</failsafe.skipAfterFailureCount>
                                 <surefire.skipAfterFailureCount>1</surefire.skipAfterFailureCount>
                             </systemPropertyVariables>
@@ -181,13 +220,18 @@
         </profile>
 
         <profile>
-            <id>travis</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <spring.profiles.active>travis</spring.profiles.active>
-            </properties>
+            <id>production</id>
+            <!--
+           <activation>
+               <activeByDefault>false</activeByDefault>
+           </activation>
+            -->
+           <properties>
+               <spring.profile>production</spring.profile>
+               <spring.profiles>production</spring.profiles>
+               <spring.profiles.active>production</spring.profiles.active>
+           </properties>
+
             <dependencies>
                 <dependency>
                     <groupId>org.neo4j</groupId>
@@ -216,11 +260,24 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <additionalProperties>
+                                <spring.profile>production</spring.profile>
+                                <spring.profiles>production</spring.profiles>
+                                <spring.profiles.active>production</spring.profiles.active>
+                            </additionalProperties>
+                        </configuration>
+                    </plugin>
+                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <systemPropertyVariables>
-                                <spring.profiles.active>travis</spring.profiles.active>
+                                <spring.profile>production</spring.profile>
+                                <spring.profiles>production</spring.profiles>
+                                <spring.profiles.active>production</spring.profiles.active>
                                 <failsafe.skipAfterFailureCount>1</failsafe.skipAfterFailureCount>
                                 <surefire.skipAfterFailureCount>1</surefire.skipAfterFailureCount>
                             </systemPropertyVariables>
@@ -229,7 +286,6 @@
                 </plugins>
             </build>
         </profile>
-
     </profiles>
 
     <repositories>

@@ -10,7 +10,7 @@ import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.examples.boot.config.Neo4jConfiguration;
+import org.springframework.data.examples.boot.config.ConfigurationProduction;
 import org.springframework.data.examples.boot.jpa.domain.Customer;
 import org.springframework.data.examples.boot.jpa.service.CustomerService;
 import org.springframework.data.examples.boot.neo4j.domain.Person;
@@ -29,7 +29,7 @@ import java.util.Optional;
 @SpringBootTest(
     classes = {
         Application.class,
-        Neo4jConfiguration.class
+        ConfigurationProduction.class
     },
     webEnvironment = SpringBootTest.WebEnvironment.NONE
 )

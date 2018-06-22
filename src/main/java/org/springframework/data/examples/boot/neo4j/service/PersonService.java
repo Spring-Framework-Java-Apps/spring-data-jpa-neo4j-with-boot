@@ -13,4 +13,6 @@ public interface PersonService {
     Optional<Person> findById(Long id);
 
     Person save(Person entity);
+
+    void deleteAll();
 }

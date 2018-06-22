@@ -6,9 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.neo4j.ogm.annotation.GraphId;
-import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.Relationship;
+import org.neo4j.ogm.annotation.*;
 
 /**
  * @author Mark Angrish
@@ -16,13 +14,15 @@ import org.neo4j.ogm.annotation.Relationship;
 @NodeEntity
 public class Person {
 
-	@GraphId
+    @Id
+    @GeneratedValue
 	private Long id;
 
+    @Property
 	private String name;
 
-	@Relationship(type = "TEAM_MATE", direction = Relationship.OUTGOING)
-	public Set<Person> teammates;
+	@Relationship
+	private Set<Person> teamMate;
 
 	private Person() {
 	}
@@ -33,21 +33,42 @@ public class Person {
 
 
 	public void worksWith(Person person) {
-		if (teammates == null) {
-			teammates = new HashSet<>();
+		if (teamMate == null) {
+            teamMate = new HashSet<>();
 		}
-		teammates.add(person);
+        teamMate.add(person);
 	}
 
+	@Override
 	public String toString() {
 
-		return this.name + "'s teammates => "
-				+ Optional.ofNullable(this.teammates).orElse(
+		return  "Person: " +  this.name + "'s teammates => "
+				+ Optional.ofNullable(this.teamMate).orElse(
 				Collections.emptySet()).stream().map(
 				Person::getName).collect(Collectors.toList());
 	}
 
-	public String getName() {
-		return name;
-	}
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Set<Person> getTeamMate() {
+        return teamMate;
+    }
+
+    public void setTeamMate(Set<Person> teamMate) {
+        this.teamMate = teamMate;
+    }
 }

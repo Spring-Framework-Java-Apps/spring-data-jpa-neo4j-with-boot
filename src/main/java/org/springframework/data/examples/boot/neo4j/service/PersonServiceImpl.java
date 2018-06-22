@@ -12,7 +12,7 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRED;
 import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 
 @Service
-@Transactional(propagation=REQUIRED,readOnly=true)
+@Transactional("neo4jTransactionManager")
 public class PersonServiceImpl implements PersonService {
 
     private final PersonRepository personRepository;
@@ -38,8 +38,19 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    @Transactional(propagation=REQUIRES_NEW,readOnly=false)
+    /*
+    @Transactional(
+        propagation=REQUIRED,
+        readOnly=false,
+        transactionManager="neo4jTransactionManager"
+    )
+    */
     public Person save(Person entity) {
         return personRepository.save(entity);
+    }
+
+    @Override
+    public void deleteAll() {
+        personRepository.deleteAll();
     }
 }

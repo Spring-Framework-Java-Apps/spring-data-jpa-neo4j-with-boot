@@ -14,4 +14,7 @@ public interface CustomerService {
     Optional<Customer> findById(Long id);
 
     Customer save(Customer entity);
+
+    void deleteAll();
+
 }

@@ -1,9 +1,16 @@
 package org.springframework.data.examples.boot.jpa.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.springframework.data.examples.boot.neo4j.domain.Person;
+
+import javax.persistence.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.EAGER;
 
 /**
  * @author Mark Angrish
@@ -18,6 +25,17 @@ public class Customer {
 	private String firstName;
 
 	private String lastName;
+
+    @OneToMany(cascade=ALL,fetch=EAGER)
+    @JoinColumn(name="teamMate_id", nullable=true,referencedColumnName="id")
+    private Set<Customer> teamMate;
+
+    public void worksWith(Customer customer) {
+        if (teamMate == null) {
+            teamMate = new HashSet<>();
+        }
+        teamMate.add(customer);
+    }
 
 	protected Customer() {
 	}
@@ -39,10 +57,17 @@ public class Customer {
 		return lastName;
 	}
 
-	@Override
-	public String toString() {
-		return String.format(
-				"Customer[id=%d, firstName='%s', lastName='%s']",
-				id, firstName, lastName);
-	}
+    @Override
+    public String toString() {
+
+        return "Customer: " + getName() + "'s teammates => "
+            + Optional.ofNullable(this.teamMate).orElse(
+            Collections.emptySet()).stream().map(
+            Customer::getName).collect(Collectors.toList());
+    }
+
+    @Transient
+    public String getName(){
+        return this.firstName + " " + this.lastName;
+    }
 }
