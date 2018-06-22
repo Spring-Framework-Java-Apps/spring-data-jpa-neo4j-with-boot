@@ -89,6 +89,14 @@ public class ConfigurationProduction {
     @Value("${spring.data.neo4j.encryption.level}")
     private String encryptionLevel = "NONE";
 
+    @Nullable
+    @Value("${spring.datasource.url}")
+    private String datasourceUrl;
+
+    @Nullable
+    @Value("${spring.datasource.driver-class-name}")
+    private String datasourceDriverCclassName;
+
     @Bean
     public org.neo4j.ogm.config.Configuration configuration() {
         LOGGER.debug("-------------------------------------------------------------");
@@ -98,6 +106,8 @@ public class ConfigurationProduction {
         LOGGER.debug("   spring.profiles =            " + this.springProfile + "   ");
         LOGGER.debug("   spring.data.neo4j.username = " + this.username + "        ");
         LOGGER.debug("   spring.data.neo4j.password = " + this.password + "        ");
+        LOGGER.debug("   spring.datasource.driver-class-name = " + this.datasourceDriverCclassName + " ");
+        LOGGER.debug("   spring.datasource.url = " + this.datasourceUrl + " ");
         LOGGER.debug("-------------------------------------------------------------");
         LOGGER.debug("   Neo4J Driver Configuration =  bolt                        ");
         LOGGER.debug("-------------------------------------------------------------");

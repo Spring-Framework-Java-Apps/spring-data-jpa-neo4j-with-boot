@@ -1,0 +1,48 @@
+spring:
+  profiles: production
+  jpa:
+    databasePlatform: org.hibernate.dialect.PostgreSQL95Dialect
+    generateDdl: true
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL94Dialect
+        globally_quoted_identifiers: true
+        temp:
+          use_jdbc_metadata_defaults: false
+    repositories:
+      enabled: true
+  datasource:
+    url: 'jdbc:postgresql://localhost:5432/evaluator?user=evaluator&password=evaluatorpwd&schema=public&catalog=information_schema'
+    username: evaluator
+    password: evaluatorpwd
+    driver-class-name: org.postgresql.Driver
+    platform: postgresql
+  dao:
+    exceptiontranslation:
+      enabled: true
+  data:
+    neo4j:
+      URI: bolt://127.0.0.1:7687
+      username: neo4j
+      password: secret
+      encryption:
+        level: NONE
+      connection:
+        pool:
+          size: 50
+        liveness:
+          check:
+            timeout: 240
+      verify:
+        connection: true
+      indexes:
+        auto:
+          dump:
+            dir: 'target/var/'
+            filename: 'indexes-auto.cypher'
+      repositories:
+        enabled: true
+

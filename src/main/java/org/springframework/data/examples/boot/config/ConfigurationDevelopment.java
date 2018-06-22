@@ -65,8 +65,6 @@ public class ConfigurationDevelopment {
     @Value("${spring.datasource.driver-class-name}")
     private String datasourceDriverCclassName;
 
-
-
 	/*
     @NonNull
     @Value("${spring.profiles.active}")
@@ -80,6 +78,8 @@ public class ConfigurationDevelopment {
         LOGGER.debug("-------------------------------------------------------------");
         LOGGER.debug("   spring.data.neo4j.URI =      " + this.neo4jUri + "        ");
         LOGGER.debug("   spring.profile =             " + this.springProfile + "   ");
+        LOGGER.debug("   spring.datasource.driver-class-name = " + this.datasourceDriverCclassName + " ");
+        LOGGER.debug("   spring.datasource.url = " + this.datasourceUrl + " ");
         LOGGER.debug("-------------------------------------------------------------");
         LOGGER.debug("   Neo4J Driver Configuration = " + this.graphDbFileName + " ");
         LOGGER.debug("-------------------------------------------------------------");
