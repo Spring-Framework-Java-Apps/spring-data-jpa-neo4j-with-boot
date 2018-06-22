@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static org.springframework.transaction.annotation.Propagation.REQUIRED;
-import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
-
+/**
+ * @author Thomas Woehlke
+ */
 @Service
 @Transactional("neo4jTransactionManager")
 public class PersonServiceImpl implements PersonService {
@@ -38,13 +38,6 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    /*
-    @Transactional(
-        propagation=REQUIRED,
-        readOnly=false,
-        transactionManager="neo4jTransactionManager"
-    )
-    */
     public Person save(Person entity) {
         return personRepository.save(entity);
     }

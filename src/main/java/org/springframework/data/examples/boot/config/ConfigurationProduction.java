@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 
 /**
- * @author Mark Angrish
+ * @author Mark Angrish, Thomas Woehlke
  */
 @Configuration
 @Profile("production")

@@ -5,6 +5,9 @@ import org.apache.commons.logging.LogFactory;
 import org.neo4j.ogm.config.Configuration;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author Thomas Woehlke
+ */
 @Component
 public class ConfigurationLoggerImpl implements ConfigurationLogger {
 

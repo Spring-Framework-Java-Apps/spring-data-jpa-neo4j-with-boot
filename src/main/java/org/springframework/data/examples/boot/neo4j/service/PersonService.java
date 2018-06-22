@@ -4,6 +4,9 @@ import org.springframework.data.examples.boot.neo4j.domain.Person;
 
 import java.util.Optional;
 
+/**
+ * @author Thomas Woehlke
+ */
 public interface PersonService {
 
     Person findByName(String name);

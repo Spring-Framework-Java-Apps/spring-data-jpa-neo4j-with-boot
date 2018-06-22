@@ -10,6 +10,10 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
+
+/**
+ * @author Thomas Woehlke
+ */
 @Component
 @Validated
 @ConfigurationProperties

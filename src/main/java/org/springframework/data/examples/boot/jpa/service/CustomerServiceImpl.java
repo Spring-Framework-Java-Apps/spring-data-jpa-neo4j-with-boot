@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 
+/**
+ * @author Thomas Woehlke
+ */
 @Service
 @Transactional("jpaTransactionManager")
 public class CustomerServiceImpl implements CustomerService {

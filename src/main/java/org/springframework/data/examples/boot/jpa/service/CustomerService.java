@@ -5,6 +5,9 @@ import org.springframework.data.examples.boot.jpa.domain.Customer;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * @author Thomas Woehlke
+ */
 public interface CustomerService {
 
     List<Customer> findByLastName(String lastName);
